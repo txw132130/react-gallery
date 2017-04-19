@@ -14,17 +14,27 @@ let imageDatas = require('../data/imageData.json');
       }
       return imageDatasArr;
     })(imageDatas);
-
+/* get the random value in the interval*/
 let getRangeRandom = (low, high) => ~~(Math.random() * (high - low) + low);
 
+/* get the random value in -30 degree ~ 30 degree*/
+let get30DegRandom = function(){
+    return (Math.random() > 0.5 ? '' : '-') + ~~(Math.random() * 30);
+}
 
 class ImgFigure extends React.Component{
   render(){
      let styleObj = {};
+
+     /*  if the position of picture exist then set position */
      if (this.props.arrange.pos) {
           styleObj = this.props.arrange.pos;
       }
 
+      /*if the rotate not 0 then do rotate*/
+      if(this.props.arrange.rotate){
+          styleObj['-moz-transform', '-ms-transform', '-webkit-transform', 'transform'] = 'rotate('+ this.props.arrange.rotate+'deg)';
+      }
      return(
         <figure className="img-figure" style={styleObj}>
             <img src={this.props.data.imageURL}
@@ -88,25 +98,29 @@ class GalleryByReactApp extends React.Component {
           vPosRangeX = vPosRange.x,
           topImgNum = ~~(Math.random() * 2),
           topImgSpiceIndex = 0,
+
+          /* picture in the center */
           imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);
           imgsArrangeCenterArr[0] = {
-                    pos: centerPos
-          /*          rotate: 0,
-                    isCenter: true*/
+                    pos: centerPos,
+                    rotate: 0
+                  /*   isCenter: true*/
                   }
            topImgSpiceIndex = ~~(Math.random() * (imgsArrangeArr.length - topImgNum));
+
+            /* picture on the top */
        let imgsArrangTopArr = imgsArrangeArr.splice(topImgSpiceIndex, topImgNum);
            imgsArrangTopArr.forEach(function(value,index){
              imgsArrangTopArr[index] = {
                  pos: {
                    top: getRangeRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
                    left: getRangeRandom(vPosRangeX[0], vPosRangeX[1])
-                 }
-                 /*rotate: get30DegRandom(),
-                 isCenter: false*/
+                 },
+                 rotate: get30DegRandom()
+                 /*isCenter: false*/
                }
            });
-
+            /* pictures on the side */
         for(let i = 0; i< imgsArrangeArr.length;i++){
             let hPosRangeLORX = null;
             if(i<imgsArrangeArr.length/2){
@@ -115,11 +129,14 @@ class GalleryByReactApp extends React.Component {
             hPosRangeLORX = hPosRangeRightSecX
             }
 
-            imgsArrangeArr[i].pos = {
-              top: getRangeRandom(hPosRangeY[0], hPosRangeY[1]),
-              left: getRangeRandom(hPosRangeLORX[0], hPosRangeLORX[1])
-            }
-
+            imgsArrangeArr[i] = {
+              pos:{
+                top: getRangeRandom(hPosRangeY[0], hPosRangeY[1]),
+                left: getRangeRandom(hPosRangeLORX[0], hPosRangeLORX[1])
+              },
+              rotate:get30DegRandom()
+          /*  isCenter: false*/
+              }
         }
         if (imgsArrangTopArr && imgsArrangTopArr[0]) {
           imgsArrangeArr.splice(topImgSpiceIndex, 0, imgsArrangTopArr[0]);
@@ -175,9 +192,9 @@ class GalleryByReactApp extends React.Component {
                     pos: {
                         left: 0,
                         top: 0
-                    }
-                  /*  rotate: 0,
-                    isInverse: false,
+                    },
+                    rotate: 0
+/*                    isInverse: false,
                     isCenter: false*/
                 }
             }

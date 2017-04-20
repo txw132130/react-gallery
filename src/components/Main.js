@@ -23,6 +23,24 @@ let get30DegRandom = function(){
 }
 
 class ImgFigure extends React.Component{
+  constructor(props){
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(e){
+    if (this.props.arrange.isCenter) {
+        this.props.inverse()
+    }else {
+        this.props.center();
+    }
+
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+
+
   render(){
      let styleObj = {};
 
@@ -35,13 +53,25 @@ class ImgFigure extends React.Component{
       if(this.props.arrange.rotate){
           styleObj['-moz-transform', '-ms-transform', '-webkit-transform', 'transform'] = 'rotate('+ this.props.arrange.rotate+'deg)';
       }
+
+      let imgFigureClassName = 'img-figure';
+      imgFigureClassName += this.props.arrange.isInverse ? ' is-inverse ' : '';
+      if(this.props.arrange.isCenter){
+        styleObj.zindex = 11;
+      }
+
      return(
-        <figure className="img-figure" style={styleObj}>
+        <figure className={ imgFigureClassName } style={styleObj} onClick = {this.handleClick}>
             <img src={this.props.data.imageURL}
                  alt={this.props.data.title}
             />
             <figcaption>
                 <h2 className="img-title">{this.props.data.title}</h2>
+                <div className="img-back" onClick={this.handleClick}>
+                    <p>
+                      {this.props.data.desc}
+                    </p>
+                </div>
             </figcaption>
         </figure>
      )
@@ -76,14 +106,31 @@ class GalleryByReactApp extends React.Component {
                         top: 0
                     },
                     rotate: 0,
-                    isInverse: false
+                    isInverse:false
                     isCenter:false
                 }*/
             ]
     }
+}
 
+  inverse(index){
 
+    return() => {
+      let imgsArrangeArr = this.state.imgsArrangeArr;
+      imgsArrangeArr[index].isInverse = !imgsArrangeArr[index].isInverse;
+
+      this.setState({
+        imgsArrangeArr: imgsArrangeArr
+      })
+    }
   }
+
+   center(index){
+     return () => {
+       this.rearrange(index);
+     }
+   }
+
   // give the img postion, centerIndex is the center image position
   rearrange(centerIndex){
       let imgsArrangeArr = this.state.imgsArrangeArr,
@@ -103,8 +150,8 @@ class GalleryByReactApp extends React.Component {
           imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);
           imgsArrangeCenterArr[0] = {
                     pos: centerPos,
-                    rotate: 0
-                  /*   isCenter: true*/
+                    rotate: 0,
+                    isCenter: true
                   }
            topImgSpiceIndex = ~~(Math.random() * (imgsArrangeArr.length - topImgNum));
 
@@ -116,8 +163,8 @@ class GalleryByReactApp extends React.Component {
                    top: getRangeRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
                    left: getRangeRandom(vPosRangeX[0], vPosRangeX[1])
                  },
-                 rotate: get30DegRandom()
-                 /*isCenter: false*/
+                 rotate: get30DegRandom(),
+                 isCenter: false
                }
            });
             /* pictures on the side */
@@ -134,8 +181,8 @@ class GalleryByReactApp extends React.Component {
                 top: getRangeRandom(hPosRangeY[0], hPosRangeY[1]),
                 left: getRangeRandom(hPosRangeLORX[0], hPosRangeLORX[1])
               },
-              rotate:get30DegRandom()
-          /*  isCenter: false*/
+              rotate:get30DegRandom(),
+              isCenter: false
               }
         }
         if (imgsArrangTopArr && imgsArrangTopArr[0]) {
@@ -158,10 +205,10 @@ class GalleryByReactApp extends React.Component {
 
      // get imgFigures size
       let imgFigureDOM = ReactDOM.findDOMNode(this.refs.imgFigures0),
-          imgW = imgFigureDOM.scrollWidth,
-          imgH = imgFigureDOM.scrollHeight,
-          halfImgW = ~~(imgW / 2),
-          halfImgH = ~~(imgH / 2);
+        imgW = imgFigureDOM.scrollWidth,
+        imgH = imgFigureDOM.scrollHeight,
+        halfImgW = ~~(imgW / 2),
+        halfImgH = ~~(imgH / 2);
 
       this.Constant.centerPos = {
         left: halfStageW - halfImgW,
@@ -193,16 +240,19 @@ class GalleryByReactApp extends React.Component {
                         left: 0,
                         top: 0
                     },
-                    rotate: 0
-/*                    isInverse: false,
-                    isCenter: false*/
+                    rotate: 0,
+                    isInverse: false,
+                    isCenter: false
                 }
             }
 
             imgFigures.push(<ImgFigure
                               data={value}
+                              key={index}
                               ref={'imgFigures'+index}
                               arrange = {this.state.imgsArrangeArr[index]}
+                              inverse={this.inverse(index)}
+                              center={this.center(index)}
                               />)
       }.bind(this))
 

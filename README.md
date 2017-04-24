@@ -4,6 +4,6 @@ Run the project in local:
 
 1: npm install
 
-2: npm start //localhost:8000
+2: npm start          //listen :localhost:8000
 
-3: npm run dist   //dist file build
+3: npm run dist       //dist file build

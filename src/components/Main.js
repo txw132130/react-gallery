@@ -4,6 +4,7 @@ require('styles/App.scss');
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+
 //transfer filename to fileUrl
 let imageDatas = require('../data/imageData.json');
     imageDatas = ((imageDatasArr) => {
@@ -51,13 +52,13 @@ class ImgFigure extends React.Component{
 
       /*if the rotate not 0 then do rotate*/
       if(this.props.arrange.rotate){
-          styleObj['-moz-transform', '-ms-transform', '-webkit-transform', 'transform'] = 'rotate('+ this.props.arrange.rotate+'deg)';
+          styleObj['MozTransform', 'msTransform', 'WebkitTransform', 'OTransform', 'transform'] = 'rotate('+ this.props.arrange.rotate+'deg)';
       }
 
       let imgFigureClassName = 'img-figure';
-      imgFigureClassName += this.props.arrange.isInverse ? ' is-inverse ' : '';
+      imgFigureClassName += this.props.arrange.isInverse ? ' is-inverse ' : ' ';
       if(this.props.arrange.isCenter){
-        styleObj.zindex = 11;
+        styleObj.zIndex = 11;
       }
 
      return(
@@ -76,6 +77,27 @@ class ImgFigure extends React.Component{
         </figure>
      )
   }
+}
+class ControllerUnit extends React.Component{
+    handleClick(e){
+
+      if (!this.props.arrange.isCenter) {
+        this.props.center();
+      } else {
+        this.props.inverse();
+      }
+
+      e.stopPropagation();
+      e.preventDefault();
+    }
+   render(){
+     let controllerUnitsClassName = 'controller-unit';
+     controllerUnitsClassName += (this.props.arrange.isCenter) ? ' is-center' : '';
+     controllerUnitsClassName += (this.props.arrange.isInverse) ? ' is-inverse' : '';
+      return(
+          <span className = {controllerUnitsClassName} onClick = {this.handleClick.bind(this)}></span>
+      );
+   }
 }
 
 class GalleryByReactApp extends React.Component {
@@ -232,7 +254,7 @@ class GalleryByReactApp extends React.Component {
   render() {
       let controllerUnits =[],
           imgFigures = [];
-      imageDatas.forEach(function(value,index){
+      imageDatas.forEach((value,index) =>{
 
             if(!this.state.imgsArrangeArr[index]){
                 this.state.imgsArrangeArr[index] = {
@@ -246,15 +268,25 @@ class GalleryByReactApp extends React.Component {
                 }
             }
 
-            imgFigures.push(<ImgFigure
-                              data={value}
-                              key={index}
-                              ref={'imgFigures'+index}
-                              arrange = {this.state.imgsArrangeArr[index]}
-                              inverse={this.inverse(index)}
-                              center={this.center(index)}
-                              />)
-      }.bind(this))
+            imgFigures.push(
+                <ImgFigure
+                  data={value}
+                  key={index}
+                  ref={'imgFigures'+index}
+                  arrange = {this.state.imgsArrangeArr[index]}
+                  inverse={this.inverse(index)}
+                  center={this.center(index)}
+                  />
+            );
+            controllerUnits.push(
+              <ControllerUnit
+                key={index}
+                arrange = {this.state.imgsArrangeArr[index]}
+                inverse={this.inverse(index)}
+                center={this.center(index)}
+              />
+            )
+      });
 
       return (
         <section className="stage" ref="stage">

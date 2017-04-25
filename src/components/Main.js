@@ -3,7 +3,10 @@ require('styles/App.scss');
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-
+import ControllerUnit from './controllerUnits';
+import ImgFigure from './imgFigure';
+import getRangeRandom from './getRangeRandom';
+import get30DegRandom from './get30DegRandom';
 
 //transfer filename to fileUrl
 let imageDatas = require('../data/imageData.json');
@@ -16,89 +19,8 @@ let imageDatas = require('../data/imageData.json');
       return imageDatasArr;
     })(imageDatas);
 /* get the random value in the interval*/
-let getRangeRandom = (low, high) => ~~(Math.random() * (high - low) + low);
-
-/* get the random value in -30 degree ~ 30 degree*/
-let get30DegRandom = function(){
-    return (Math.random() > 0.5 ? '' : '-') + ~~(Math.random() * 30);
-}
-
-class ImgFigure extends React.Component{
-  constructor(props){
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(e){
-    if (this.props.arrange.isCenter) {
-        this.props.inverse()
-    }else {
-        this.props.center();
-    }
-
-    e.stopPropagation();
-    e.preventDefault();
-  }
 
 
-
-  render(){
-     let styleObj = {};
-
-     /*  if the position of picture exist then set position */
-     if (this.props.arrange.pos) {
-          styleObj = this.props.arrange.pos;
-      }
-
-      /*if the rotate not 0 then do rotate*/
-      if(this.props.arrange.rotate){
-          styleObj['MozTransform', 'msTransform', 'WebkitTransform', 'OTransform', 'transform'] = 'rotate('+ this.props.arrange.rotate+'deg)';
-      }
-
-      let imgFigureClassName = 'img-figure';
-      imgFigureClassName += this.props.arrange.isInverse ? ' is-inverse ' : ' ';
-      if(this.props.arrange.isCenter){
-        styleObj.zIndex = 11;
-      }
-
-     return(
-        <figure className={ imgFigureClassName } style={styleObj} onClick = {this.handleClick}>
-            <img src={this.props.data.imageURL}
-                 alt={this.props.data.title}
-            />
-            <figcaption>
-                <h2 className="img-title">{this.props.data.title}</h2>
-                <div className="img-back" onClick={this.handleClick}>
-                    <p>
-                      {this.props.data.desc}
-                    </p>
-                </div>
-            </figcaption>
-        </figure>
-     )
-  }
-}
-class ControllerUnit extends React.Component{
-    handleClick(e){
-
-      if (!this.props.arrange.isCenter) {
-        this.props.center();
-      } else {
-        this.props.inverse();
-      }
-
-      e.stopPropagation();
-      e.preventDefault();
-    }
-   render(){
-     let controllerUnitsClassName = 'controller-unit';
-     controllerUnitsClassName += (this.props.arrange.isCenter) ? ' is-center' : '';
-     controllerUnitsClassName += (this.props.arrange.isInverse) ? ' is-inverse' : '';
-      return(
-          <span className = {controllerUnitsClassName} onClick = {this.handleClick.bind(this)}></span>
-      );
-   }
-}
 
 class GalleryByReactApp extends React.Component {
   constructor(props){

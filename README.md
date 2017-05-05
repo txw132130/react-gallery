@@ -1,4 +1,4 @@
-real preview link: https://txw132130.github.io/react-gallery/
+demo link: https://txw132130.github.io/react-gallery/
 
 Run the project in local:
 
